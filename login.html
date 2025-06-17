@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <link href="{{ url_for('static', filename='tailwind.min.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-[390px] p-4 bg-white rounded-lg shadow-md">
+        <h1 class="text-xl font-bold text-center mb-4">Авторизация</h1>
+        <form id="loginForm" class="space-y-3">
+            <div>
+                <label for="login" class="block text-xs font-medium text-gray-700">Логин</label>
+                <input type="text" id="login" name="login" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <p id="loginError" class="text-red-500 text-xs mt-1 hidden"></p>
+            </div>
+            <div>
+                <label for="password" class="block text-xs font-medium text-gray-700">Пароль</label>
+                <input type="password" id="password" name="password" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <p id="passwordError" class="text-red-500 text-xs mt-1 hidden"></p>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md text-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Войти</button>
+        </form>
+        <p class="text-center mt-3 text-sm"><a href="{{ url_for('register_page') }}" class="text-blue-500 hover:underline">Нет аккаунта? Зарегистрироваться</a></p>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            document.querySelectorAll('.text-red-500').forEach(el => {
+                el.textContent = '';
+                el.classList.add('hidden');
+            });
+            try {
+                const response = await fetch('/api/login', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    window.location.href = result.data.is_admin ? '/admin' : '/shipments';
+                } else {
+                    document.getElementById('loginError').textContent = result.message;
+                    document.getElementById('loginError').classList.remove('hidden');
+                }
+            } catch (error) {
+                alert('Ошибка сервера');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

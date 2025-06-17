@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Новая заявка</title>
+    <link href="{{ url_for('static', filename='tailwind.min.css') }}" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-[390px] p-4 bg-white rounded-lg shadow-md">
+        <h1 class="text-xl font-bold text-center mb-4">Новая заявка на перевозку</h1>
+        <form id="shipmentForm" class="space-y-3">
+            <div>
+                <label for="shipment_date" class="block text-xs font-medium text-gray-700">Дата и время</label>
+                <input type="datetime-local" id="shipment_date" name="shipment_date" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="cargo_weight" class="block text-xs font-medium text-gray-700">Вес груза (кг)</label>
+                <input type="number" id="cargo_weight" name="cargo_weight" step="0.01" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="cargo_type" class="block text-xs font-medium text-gray-700">Тип груза</label>
+                <input type="text" id="cargo_type" name="cargo_type" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="origin_address" class="block text-xs font-medium text-gray-700">Адрес отправления</label>
+                <input type="text" id="origin_address" name="origin_address" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <div>
+                <label for="destination_address" class="block text-xs font-medium text-gray-700">Адрес доставки</label>
+                <input type="text" id="destination_address" name="destination_address" class="w-full p-2 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white p-2 rounded-md text-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Отправить</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('shipmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch('/api/create_shipment', { method: 'POST', body: formData });
+                const result = await response.json();
+                if (result.success) {
+                    alert(result.message);
+                    window.location.href = '/shipments';
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert('Ошибка сервера');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>
